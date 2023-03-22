@@ -2,7 +2,9 @@ package telegram
 
 import (
 	"log"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	
 )
 
 type Bot struct {
@@ -25,6 +27,12 @@ func (b *Bot) StartBot() error{
 	
 	for update := range updates{
 		if update.Message == nil{
+			continue
+		}
+		if update.Message.IsCommand(){
+			if err := b.handleCommand(update.Message); err != nil{
+				log.Print(err)
+			}
 			continue
 		}
 	}

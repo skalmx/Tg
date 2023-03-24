@@ -2,9 +2,7 @@ package telegram
 
 import (
 	"log"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	
 )
 
 type Bot struct {
@@ -28,21 +26,15 @@ func (b *Bot) StartBot() error{
 	for update := range updates{
 
 		if update.CallbackQuery != nil{
-			callback := tgbotapi.NewCallback(update.CallbackQuery.ID, update.CallbackQuery.Data)
-			if _, err := b.bot.Request(callback); err != nil{
-				log.Print(err)
-			}
-
-			msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, update.CallbackQuery.Data)
-	
-			_, err := b.bot.Send(msg); if err != nil {
+			if err := b.handleButtons(update.CallbackQuery); err != nil{
 				log.Print(err)
 			}
 			continue
 		}
-		// if update.Message == nil{
-		// 	continue
-		// }
+
+		if update.Message == nil{
+			continue
+		}
 		
 		if update.Message.IsCommand(){
 			if err := b.handleCommand(update.Message); err != nil{
@@ -50,9 +42,6 @@ func (b *Bot) StartBot() error{
 			}
 			continue
 		}
-		
-		
-	}
-	
+	}	
 	return nil
 }

@@ -2,7 +2,6 @@ package telegram
 
 import (
 	
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -87,4 +86,18 @@ func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error{
 	return err
 
 	
+}
+
+func (b *Bot) handleButtons(cb *tgbotapi.CallbackQuery) error{
+	callback := tgbotapi.NewCallback(cb.ID, cb.Data)
+	if _, err := b.bot.Request(callback); err != nil{
+				return err
+		}
+
+		msg := tgbotapi.NewMessage(cb.Message.Chat.ID, cb.Data)
+	
+			_, err := b.bot.Send(msg); if err != nil {
+				return err
+		}
+			return nil
 }

@@ -1,14 +1,5 @@
 package webapi
 
-// import (
-// 	"encoding/json"
-// 	"fmt"
-// 	"io"
-// 	"log"
-// 	"net/http"
-// )
-
-
 type BreedInfo  []struct {
 	W Weight `json:"weight"`
 	H Height `json:"height"`

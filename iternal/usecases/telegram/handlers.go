@@ -1,7 +1,10 @@
 package telegram
 
 import (
-	
+	"strings"
+	"tg/iternal/usecases/webapi"
+	"time"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
@@ -29,6 +32,7 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
+	
 	msg := tgbotapi.NewMessage(message.Chat.ID, "Its start command hello <3")
 	
 	_, err := b.bot.Send(msg)
@@ -36,12 +40,14 @@ func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 }
 
 func (b *Bot) handleUknownCommand(message *tgbotapi.Message) error {
+
 	msg := tgbotapi.NewMessage(message.Chat.ID, "I dont know this command sry :(")
 	
 	_, err := b.bot.Send(msg)
 	return err
 }
 func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error{
+
 	var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("A","A"),
@@ -84,20 +90,30 @@ func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error{
 
 	_, err := b.bot.Send(msg)
 	return err
-
-	
 }
 
 func (b *Bot) handleButtons(cb *tgbotapi.CallbackQuery) error{
 	callback := tgbotapi.NewCallback(cb.ID, cb.Data)
-	if _, err := b.bot.Request(callback); err != nil{
-				return err
-		}
 
-		msg := tgbotapi.NewMessage(cb.Message.Chat.ID, cb.Data)
+	if _, err := b.bot.Request(callback); err != nil{
+		return err
+	}
 	
-			_, err := b.bot.Send(msg); if err != nil {
-				return err
-		}
-			return nil
+	client, err := webapi.NewClient(time.Second * 7)
+	if err != nil{
+		return err
+	}
+	breeds, err := client.FindBreed(cb.Data[0])
+	if err != nil{
+		return err
+	}
+
+	text := strings.Join(breeds, "\n")
+	
+	msg := tgbotapi.NewMessage(cb.Message.Chat.ID, text)
+	
+	_, err = b.bot.Send(msg); if err != nil {
+		return err
+	}
+	return nil
 }

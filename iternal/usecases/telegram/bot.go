@@ -14,13 +14,12 @@ func NewBot(bot *tgbotapi.BotAPI) *Bot{
 }
 
 func (b *Bot) StartBot() error{
+	
 	log.Printf("%s is working now", b.bot.Self.UserName)
-
 
 	updateConfig := tgbotapi.NewUpdate(0)
     updateConfig.Timeout = 30
 
-    
     updates := b.bot.GetUpdatesChan(updateConfig)
 	
 	for update := range updates{
@@ -31,11 +30,6 @@ func (b *Bot) StartBot() error{
 			}
 			continue
 		}
-
-		if update.Message == nil{
-			continue
-		}
-		
 		if update.Message.IsCommand(){
 			if err := b.handleCommand(update.Message); err != nil{
 				log.Print(err)

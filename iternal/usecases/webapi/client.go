@@ -57,27 +57,27 @@ func (c *Client) FindBreed(letter byte) ([]string, error) {
 	return dogList, nil
 }
 
-func (c *Client) BreedInfo(breed string) (string, error){
+func (c *Client) BreedInfo(breed string) (string,string, error){
 	resp, err := c.client.Get(breedUrl) 
 		if err != nil{
-			return "", err
+			return "", "", err
 		}
 		
 	body, err := io.ReadAll(resp.Body)
 		if err != nil{
-			return "", err
+			return "", "", err
 	}
 	defer resp.Body.Close()
 	
 	var breeds BreedInfo
 	if err := json.Unmarshal(body, &breeds); err != nil{
-		return "", err
+		return "", "", err
 	}
 	
 	for _, value := range breeds{
 		if breed == value.Name{
-			return fmt.Sprintf("%d %s",value.ID, value.Bredfor),nil
+			return fmt.Sprintf("%d %s",value.ID, value.Bredfor),value.Image.Url, nil
 		}
 	}
-	return "Please enter the dog breed corectly", errors.New("dont found this breed")
+	return "Please enter the dog breed corectly", "",errors.New("dont found this breed")
 } 

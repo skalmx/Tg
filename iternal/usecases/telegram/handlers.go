@@ -52,10 +52,17 @@ func (b *Bot) handleMessages(message *tgbotapi.Message) error {
 	if err != nil{
 		return err
 	}
-	answer, _ := client.BreedInfo(message.Text)
+	answer, url, _ := client.BreedInfo(message.Text)
 	
 	msg := tgbotapi.NewMessage(message.Chat.ID, answer)
 	_, err = b.bot.Send(msg)
+	if err != nil{
+		return err
+	}
+
+	photo := tgbotapi.NewPhoto(message.Chat.ID,tgbotapi.FileURL(url)) //way to send a photo
+	_, err = b.bot.Send(photo)
+	
 	return err
 }
 func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error { 

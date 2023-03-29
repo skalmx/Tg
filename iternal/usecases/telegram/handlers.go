@@ -1,6 +1,7 @@
 package telegram
 
 import (
+
 	"strings"
 	"tg/iternal/usecases/webapi"
 	"time"
@@ -33,20 +34,31 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 
 func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 	
-	msg := tgbotapi.NewMessage(message.Chat.ID, "Its start command hello <3")
-	
+    msg := tgbotapi.NewMessage(message.Chat.ID, "start command")
+
 	_, err := b.bot.Send(msg)
 	return err
 }
 
 func (b *Bot) handleUknownCommand(message *tgbotapi.Message) error {
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "I dont know this command sry :(")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "unkown command")
 	
 	_, err := b.bot.Send(msg)
 	return err
 }
-func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error{
+func (b *Bot) handleMessages(message *tgbotapi.Message) error {
+	client, err := webapi.NewClient(time.Second * 5)
+	if err != nil{
+		return err
+	}
+	answer, _ := client.BreedInfo(message.Text)
+	
+	msg := tgbotapi.NewMessage(message.Chat.ID, answer)
+	_, err = b.bot.Send(msg)
+	return err
+}
+func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error { 
 
 	var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
@@ -92,14 +104,14 @@ func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error{
 	return err
 }
 
-func (b *Bot) handleButtons(cb *tgbotapi.CallbackQuery) error{
+func (b *Bot) handleButtons(cb *tgbotapi.CallbackQuery) error {
 	callback := tgbotapi.NewCallback(cb.ID, cb.Data)
 
 	if _, err := b.bot.Request(callback); err != nil{
 		return err
 	}
 	
-	client, err := webapi.NewClient(time.Second * 7)
+	client, err := webapi.NewClient(time.Second * 5)
 	if err != nil{
 		return err
 	}
@@ -111,7 +123,19 @@ func (b *Bot) handleButtons(cb *tgbotapi.CallbackQuery) error{
 	text := strings.Join(breeds, "\n")
 	
 	msg := tgbotapi.NewMessage(cb.Message.Chat.ID, text)
+
+	offset := 0
+
+	for _, value := range breeds{
+		msg.Entities = append(msg.Entities, tgbotapi.MessageEntity{
+			Offset: offset,
+			Length: len(value),
+			Type: "code",
+		})
+		offset += len(value) + 1 //add +1 cause of /n 
+	}
 	
+
 	_, err = b.bot.Send(msg); if err != nil {
 		return err
 	}

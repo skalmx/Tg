@@ -10,7 +10,7 @@ type Bot struct {
 }
 
 func NewBot(bot *tgbotapi.BotAPI) *Bot{
-	return &Bot{bot: bot }
+	return &Bot {bot: bot }
 }
 
 func (b *Bot) StartBot() error{
@@ -34,6 +34,14 @@ func (b *Bot) StartBot() error{
 			if err := b.handleCommand(update.Message); err != nil{
 				log.Print(err)
 			}
+			continue
+		}
+		if update.Message != nil{
+			if err := b.handleMessages(update.Message); err != nil{
+				log.Print(err)
+			}
+		}
+		if update.EditedMessage != nil{ // this check is added because after user edit his msg, bot ll not work at all
 			continue
 		}
 	}	

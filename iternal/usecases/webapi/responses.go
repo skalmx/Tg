@@ -28,3 +28,8 @@ type Image struct{
 	Height int `json:"height"`
 	Url  string `json:"url"`
 }
+
+type Fact struct{
+	Fact []string `json:"facts"`
+	OK bool `json:"success"`
+}

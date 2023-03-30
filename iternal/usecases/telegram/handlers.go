@@ -29,7 +29,14 @@ func (b *Bot) handleCommand(message *tgbotapi.Message) error {
 
 func (b *Bot) handleStartCommand(message *tgbotapi.Message) error {
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "start command")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "Hello, I am a bot who loves dogs very much. Let me tell you what I can do.\nWith /list you can see all the breeds of dogs that I know. You can also send me the breed of the dog and I will tell you what I know about it.\nYes, I forgot, I can tell you a lot of facts about dogs, for this use /randomfact!")
+	var startKeyboadrd = tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton("/list"),
+			tgbotapi.NewKeyboardButton("/randomfact"),
+	    ),
+	)
+	msg.ReplyMarkup = startKeyboadrd
 
 	_, err := b.bot.Send(msg)
 	return err
@@ -43,7 +50,7 @@ func (b *Bot) handleUknownCommand(message *tgbotapi.Message) error {
 	return err
 }
 
-func (b *Bot) handleRndFactCommand (message *tgbotapi.Message) error {
+func (b *Bot) handleRndFactCommand(message *tgbotapi.Message) error {
 	client, err := webapi.NewClient(time.Second * 5)
 	if err != nil {
 		return err
@@ -61,7 +68,7 @@ func (b *Bot) handleRndFactCommand (message *tgbotapi.Message) error {
 
 func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error {
 
-	var numericKeyboard = tgbotapi.NewInlineKeyboardMarkup(
+	var lettersChoise = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("A", "A"),
 			tgbotapi.NewInlineKeyboardButtonData("B", "B"),
@@ -98,7 +105,7 @@ func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error {
 	)
 
 	msg := tgbotapi.NewMessage(message.Chat.ID, "list command")
-	msg.ReplyMarkup = numericKeyboard
+	msg.ReplyMarkup = lettersChoise
 
 	_, err := b.bot.Send(msg)
 	return err
@@ -110,7 +117,7 @@ func (b *Bot) handleMessages(message *tgbotapi.Message) error {
 		return err
 	}
 	answer, url, _ := client.BreedInfo(message.Text)
-
+	
 	msg := tgbotapi.NewMessage(message.Chat.ID, answer)
 	_, err = b.bot.Send(msg)
 	if err != nil {

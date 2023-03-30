@@ -76,10 +76,12 @@ func (c *Client) BreedInfo(breed string) (string,string, error) {
 	
 	for _, value := range breeds{
 		if breed == value.Name{
-			return fmt.Sprintf("%d %s",value.ID, value.Bredfor),value.Image.Url, nil
+			info := fmt.Sprintf("%s\nAverage Weight: %s kg\nAverage Height: %s cm\n",
+				value.Name, value.W.Metric, value.H.Metric)
+			return info ,value.Image.Url, nil
 		}
 	}
-	return "Please enter the dog breed corectly", "",errors.New("dont found this breed")
+	return "Please enter the dog breed only, or check the spelling", "",errors.New("dont found this breed")
 }
 
 func (c *Client) RndFact() (string, error) {

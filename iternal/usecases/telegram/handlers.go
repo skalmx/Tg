@@ -104,7 +104,7 @@ func (b *Bot) handleGetBreedsCommand(message *tgbotapi.Message) error {
 		),
 	)
 
-	msg := tgbotapi.NewMessage(message.Chat.ID, "list command")
+	msg := tgbotapi.NewMessage(message.Chat.ID, "For a convenient search, select the letter that begins with the breed of dog you want to know about")
 	msg.ReplyMarkup = lettersChoise
 
 	_, err := b.bot.Send(msg)
@@ -119,11 +119,18 @@ func (b *Bot) handleMessages(message *tgbotapi.Message) error {
 	answer, url, _ := client.BreedInfo(message.Text)
 	
 	msg := tgbotapi.NewMessage(message.Chat.ID, answer)
+	msg.Entities = append(msg.Entities, tgbotapi.MessageEntity{
+		Offset: 0,
+		Length: len(strings.Split(answer, "\n")[0]), // get a len of a first row to bold it
+		Type:   "bold",
+	})
 	_, err = b.bot.Send(msg)
 	if err != nil {
 		return err
 	}
-
+	if url == ""{
+		return nil // checking if the response contains a url , if not user sent invalid message and already recieve message about it
+	}
 	photo := tgbotapi.NewPhoto(message.Chat.ID, tgbotapi.FileURL(url)) //way to send a photo
 	_, err = b.bot.Send(photo)
 

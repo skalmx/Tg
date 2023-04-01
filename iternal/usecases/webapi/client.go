@@ -76,8 +76,8 @@ func (c *Client) BreedInfo(breed string) (string,string, error) {
 	
 	for _, value := range breeds{
 		if breed == value.Name{
-			info := fmt.Sprintf("%s\nAverage Weight: %s kg\nAverage Height: %s cm\n",
-				value.Name, value.W.Metric, value.H.Metric)
+			info := fmt.Sprintf("%s\nAverage Weight: %s kg\nAverage Height: %s cm\nСharacter traits: %s",
+				value.Name, value.W.Metric, value.H.Metric, value.Temperament)
 			return info ,value.Image.Url, nil
 		}
 	}

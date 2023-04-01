@@ -1,1 +1,1 @@
-# in dev now
+This is a bot that uses 2 third party APIs to get information about dog breeds and various facts related to dogs. /list /randomfact and /start commands are avaliable and u can type message to bot to get info about dog breed you choosed.

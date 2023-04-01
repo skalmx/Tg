@@ -141,6 +141,18 @@ func (b *Bot) handleCallbacks(cb *tgbotapi.CallbackQuery) error {
 	if _, err := b.bot.Request(callback); err != nil {
 		return err
 	}
+
+	msg := tgbotapi.NewMessage(cb.Message.Chat.ID, "Dont forget to copy name of the breed and send it to me!")
+	msg.Entities = append(msg.Entities, tgbotapi.MessageEntity{
+		Offset: 0,
+		Length: len(msg.Text),
+		Type:   "bold",
+	})
+	_, err := b.bot.Send(msg)
+	if err != nil{
+		return err
+	}
+
 	client, err := webapi.NewClient(time.Second * 5)
 	if err != nil {
 		return err
@@ -151,7 +163,7 @@ func (b *Bot) handleCallbacks(cb *tgbotapi.CallbackQuery) error {
 	}
 
 	text := strings.Join(breeds, "\n")
-	msg := tgbotapi.NewMessage(cb.Message.Chat.ID, text)
+	msg = tgbotapi.NewMessage(cb.Message.Chat.ID, text)
 
 	offset := 0
 	for _, value := range breeds {
